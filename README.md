@@ -62,5 +62,3 @@ If macOS asks for approval, allow AgentKeep in:
 ```text
 System Settings > General > Login Items
 ```
-
-GitHub Actions only runs tests and verifies that the local package can be built. It does not publish releases.
