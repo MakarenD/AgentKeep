@@ -1,0 +1,47 @@
+name: AgentKeep
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Run tests
+        run: swift test
+
+  build:
+    name: Build macOS app
+    runs-on: macos-14
+    needs: test
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Build local installer package
+        run: ./scripts/build-package.sh
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: AgentKeep-local-build-${{ github.run_number }}
+          path: .build/release-artifacts/*.pkg
+          if-no-files-found: error
+          archive: false

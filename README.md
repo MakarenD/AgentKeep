@@ -16,18 +16,6 @@ It lets you keep a Mac awake while the lid is closed, so a coding agent can keep
 - Disables Keep-Awake before quitting, so closing AgentKeep does not leave the Mac in `SleepDisabled` mode.
 - Warns before quitting if macOS cannot disable Keep-Awake.
 
-## Install
-
-Download the latest DMG from GitHub Releases, open it, and drag `AgentKeep.app` to Applications.
-
-Open AgentKeep once from Applications. It will appear in the macOS menu bar and register itself as a Login Item.
-
-If macOS asks for approval, allow AgentKeep in:
-
-```text
-System Settings > General > Login Items
-```
-
 ## Usage
 
 Click the AgentKeep menu bar icon.
@@ -60,11 +48,19 @@ Build the app bundle:
 open .build/AgentKeep.app
 ```
 
-Build a local DMG:
+Build and install a local package:
 
 ```sh
-./scripts/package-release.sh
-open .build/release-artifacts/AgentKeep-0.1.0-macOS.dmg
+./scripts/build-package.sh
+open .build/release-artifacts/AgentKeep-0.1.0-macOS.pkg
 ```
 
-Local builds are ad-hoc signed by default. They are good for development, but public downloads should be Developer ID signed and notarized.
+After installation, open AgentKeep once from Applications. It will appear in the macOS menu bar and register itself as a Login Item.
+
+If macOS asks for approval, allow AgentKeep in:
+
+```text
+System Settings > General > Login Items
+```
+
+GitHub Actions only runs tests and verifies that the local package can be built. It does not publish releases.
