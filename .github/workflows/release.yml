@@ -23,7 +23,7 @@ jobs:
     runs-on: macos-14
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Show Swift version
         run: swift --version
@@ -39,22 +39,29 @@ jobs:
     env:
       RELEASE_TAG_INPUT: ${{ inputs.release_tag }}
       IS_RELEASE_BUILD: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
+      HAS_APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE_BASE64 != '' && secrets.APPLE_CERTIFICATE_PASSWORD != '' }}
+      HAS_NOTARIZATION_SECRETS: ${{ secrets.APPLE_CERTIFICATE_BASE64 != '' && secrets.APPLE_CERTIFICATE_PASSWORD != '' && secrets.APPLE_ID != '' && secrets.APPLE_TEAM_ID != '' && secrets.APPLE_APP_SPECIFIC_PASSWORD != '' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
 
       - name: Show Swift version
         run: swift --version
 
       - name: Import Apple Developer ID certificate
-        if: env.IS_RELEASE_BUILD == 'true'
+        if: env.IS_RELEASE_BUILD == 'true' && env.HAS_APPLE_CERTIFICATE == 'true'
         env:
           APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CODE_SIGN_IDENTITY: ${{ secrets.CODE_SIGN_IDENTITY }}
           KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-          REQUIRE_NOTARIZATION: "1"
         run: source scripts/ci-import-codesign-cert.sh
+
+      - name: Explain unsigned release
+        if: env.IS_RELEASE_BUILD == 'true' && env.HAS_APPLE_CERTIFICATE != 'true'
+        run: |
+          echo "Apple Developer ID certificate secrets are not configured."
+          echo "This release will still be published, but the DMG will only be ad-hoc signed and macOS Gatekeeper may warn users."
 
       - name: Build DMG
         env:
@@ -70,16 +77,22 @@ jobs:
             if [[ -n "${RELEASE_TAG_INPUT:-}" ]]; then
               export VERSION="${RELEASE_TAG_INPUT#v}"
             fi
+
+            if [[ "$HAS_NOTARIZATION_SECRETS" != "true" ]]; then
+              unset REQUIRE_NOTARIZATION
+              echo "Notarization secrets are not configured; building without notarization."
+            fi
           fi
 
           ./scripts/package-release.sh
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: AgentKeep-macOS-${{ github.run_number }}
           path: .build/release-artifacts/*.dmg
           if-no-files-found: error
+          archive: false
 
       - name: Explain release publishing
         if: env.IS_RELEASE_BUILD != 'true'
@@ -97,6 +110,10 @@ jobs:
           tag="${RELEASE_TAG_INPUT:-$GITHUB_REF_NAME}"
           title="AgentKeep $tag"
           notes="macOS release for AgentKeep $tag. Download the DMG, drag AgentKeep.app to Applications, and open it once."
+
+          if [[ "$HAS_NOTARIZATION_SECRETS" != "true" ]]; then
+            notes="${notes}"$'\n\n'"Note: this build was published without Apple notarization because Apple Developer release secrets are not configured."
+          fi
 
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" .build/release-artifacts/*.dmg --clobber
