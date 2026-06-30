@@ -68,26 +68,3 @@ open .build/release-artifacts/AgentKeep-0.1.0-macOS.dmg
 ```
 
 Local builds are ad-hoc signed by default. They are good for development, but public downloads should be Developer ID signed and notarized.
-
-## GitHub Releases
-
-GitHub Actions runs tests, builds a universal macOS app (`arm64` and `x86_64`), creates a DMG and ZIP, and attaches them to a GitHub Release.
-
-Push a version tag to publish a release:
-
-```sh
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-Pushes to `main` also build downloadable workflow artifacts, but only tags matching `v*` create GitHub Releases.
-
-Notarized release builds require these GitHub repository secrets:
-
-- `APPLE_CERTIFICATE_BASE64`: base64-encoded Developer ID Application `.p12`.
-- `APPLE_CERTIFICATE_PASSWORD`: password for the `.p12`.
-- `APPLE_ID`: Apple Developer account email for notarization.
-- `APPLE_TEAM_ID`: Apple Developer Team ID.
-- `APPLE_APP_SPECIFIC_PASSWORD`: app-specific password for notarization.
-- `KEYCHAIN_PASSWORD`: temporary CI keychain password.
-- `CODE_SIGN_IDENTITY`: optional Developer ID Application identity override.
