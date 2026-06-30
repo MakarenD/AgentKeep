@@ -60,7 +60,7 @@ Build the app bundle:
 open .build/AgentKeep.app
 ```
 
-Build a local DMG and ZIP:
+Build a local DMG:
 
 ```sh
 ./scripts/package-release.sh

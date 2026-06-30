@@ -6,12 +6,12 @@ on:
     branches:
       - main
     tags:
-      - "v*"
+      - "*"
   workflow_dispatch:
     inputs:
       release_tag:
-        description: "Optional release tag to publish, for example v0.1.0. Leave empty to build artifacts only."
-        required: false
+        description: "Release tag to publish, for example v0.1.0."
+        required: true
         type: string
 
 permissions:
@@ -23,7 +23,7 @@ jobs:
     runs-on: macos-14
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Show Swift version
         run: swift --version
@@ -35,13 +35,13 @@ jobs:
     name: Package macOS app
     runs-on: macos-14
     needs: test
-    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
     env:
       RELEASE_TAG_INPUT: ${{ inputs.release_tag }}
-      IS_RELEASE_BUILD: ${{ startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '') }}
+      IS_RELEASE_BUILD: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Show Swift version
         run: swift --version
@@ -56,7 +56,7 @@ jobs:
           REQUIRE_NOTARIZATION: "1"
         run: source scripts/ci-import-codesign-cert.sh
 
-      - name: Build DMG and ZIP
+      - name: Build DMG
         env:
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
@@ -75,17 +75,17 @@ jobs:
           ./scripts/package-release.sh
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: AgentKeep-macOS-${{ github.run_number }}
-          path: .build/release-artifacts/*
+          path: .build/release-artifacts/*.dmg
           if-no-files-found: error
 
       - name: Explain release publishing
         if: env.IS_RELEASE_BUILD != 'true'
         run: |
           echo "This run built downloadable artifacts only."
-          echo "GitHub Release publishing runs for tags like v0.1.0, or for a manual workflow_dispatch run with release_tag set."
+          echo "GitHub Release publishing runs when a tag is pushed, or for a manual workflow_dispatch run with release_tag set."
 
       - name: Publish GitHub Release
         if: env.IS_RELEASE_BUILD == 'true'
@@ -99,7 +99,7 @@ jobs:
           notes="macOS release for AgentKeep $tag. Download the DMG, drag AgentKeep.app to Applications, and open it once."
 
           if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" .build/release-artifacts/* --clobber
+            gh release upload "$tag" .build/release-artifacts/*.dmg --clobber
           else
-            gh release create "$tag" .build/release-artifacts/* --title "$title" --notes "$notes" --target "$GITHUB_SHA"
+            gh release create "$tag" .build/release-artifacts/*.dmg --title "$title" --notes "$notes" --target "$GITHUB_SHA"
           fi

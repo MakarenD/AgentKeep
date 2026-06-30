@@ -57,23 +57,10 @@ mkdir -p "$ARTIFACTS_DIR" "$DMG_ROOT"
 
 VERSION="$VERSION" BUNDLE_VERSION="$BUILD_NUMBER" "$ROOT_DIR/scripts/build-app.sh"
 
-ZIP_PATH="$ARTIFACTS_DIR/AgentKeep-$VERSION-macOS.zip"
 DMG_PATH="$ARTIFACTS_DIR/AgentKeep-$VERSION-macOS.dmg"
-CHECKSUM_PATH="$ARTIFACTS_DIR/AgentKeep-$VERSION-checksums.txt"
-
-ditto -c -k --keepParent "$APP_DIR" "$ZIP_PATH"
 
 cp -R "$APP_DIR" "$DMG_ROOT/AgentKeep.app"
 ln -s /Applications "$DMG_ROOT/Applications"
-
-cat > "$DMG_ROOT/Install AgentKeep.txt" <<INSTALL
-Install:
-1. Drag AgentKeep.app to Applications.
-2. Open AgentKeep once from Applications.
-3. AgentKeep registers itself to launch at login and appears in the macOS menu bar.
-
-If macOS asks for approval, allow AgentKeep in System Settings > General > Login Items.
-INSTALL
 
 hdiutil create \
   -volname "AgentKeep $VERSION" \
@@ -92,9 +79,5 @@ if [[ "$NOTARIZE" == "1" ]]; then
   xcrun stapler staple "$DMG_PATH"
 fi
 
-shasum -a 256 "$ZIP_PATH" "$DMG_PATH" > "$CHECKSUM_PATH"
-
 echo "Release artifacts:"
 echo "$DMG_PATH"
-echo "$ZIP_PATH"
-echo "$CHECKSUM_PATH"
