@@ -1,23 +1,34 @@
 import AppKit
 
-public final class AppDelegate: NSObject, NSApplicationDelegate {
+public final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let powerManager = PowerManager()
     private let loginItemManager = LoginItemManager()
+    private let localServerMonitor = LocalServerMonitor()
     private var statusItem: NSStatusItem?
     private let menu = NSMenu()
     private let stateItem = NSMenuItem()
     private let toggleItem = NSMenuItem()
     private let refreshItem = NSMenuItem()
+    private let localServersHeaderItem = NSMenuItem()
+    private let refreshLocalServersItem = NSMenuItem()
+    private let stopLocalServersItem = NSMenuItem()
     private let launchAtLoginItem = NSMenuItem()
     private let openLoginItemsSettingsItem = NSMenuItem()
     private let quitItem = NSMenuItem()
 
     private var isKeepAwakeEnabled: Bool?
+    private var localServers: [LocalServerProcess] = []
+    private var localServerItems: [NSMenuItem] = []
+    private var localServerError: Error?
     private var launchAtLoginState = LoginItemManager.State.unknown
     private var isWorking = false
+    private var isRefreshingLocalServers = false
+    private var isStoppingLocalServers = false
+    private var shouldPresentLocalServerRefreshError = false
     private var isUpdatingLaunchAtLogin = false
     private var isPreparingToQuit = false
     private var hasApprovedTermination = false
+    private var localServerRefreshTimer: Timer?
 
     public override init() {
         super.init()
@@ -29,6 +40,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         configureMenu()
         refreshLaunchAtLogin(registerIfNeeded: loginItemManager.isLaunchAtLoginPreferred)
         refreshState()
+        refreshLocalServers()
+        startLocalServerRefreshTimer()
     }
 
     private func configureStatusItem() {
@@ -45,6 +58,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func configureMenu() {
+        menu.delegate = self
+
         stateItem.isEnabled = false
         menu.addItem(stateItem)
 
@@ -56,6 +71,21 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         refreshItem.target = self
         refreshItem.action = #selector(refreshStateFromMenu)
         menu.addItem(refreshItem)
+
+        menu.addItem(.separator())
+
+        localServersHeaderItem.isEnabled = false
+        menu.addItem(localServersHeaderItem)
+
+        refreshLocalServersItem.title = "Refresh Local Servers"
+        refreshLocalServersItem.target = self
+        refreshLocalServersItem.action = #selector(refreshLocalServersFromMenu)
+        menu.addItem(refreshLocalServersItem)
+
+        stopLocalServersItem.title = "Stop All Local Servers..."
+        stopLocalServersItem.target = self
+        stopLocalServersItem.action = #selector(stopAllLocalServers)
+        menu.addItem(stopLocalServersItem)
 
         menu.addItem(.separator())
 
@@ -80,8 +110,39 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         updateMenu()
     }
 
+    public func menuWillOpen(_ menu: NSMenu) {
+        refreshLocalServers()
+    }
+
     @objc private func refreshStateFromMenu() {
         refreshState()
+    }
+
+    @objc private func refreshLocalServersFromMenu() {
+        refreshLocalServers(presentErrors: true)
+    }
+
+    @objc private func stopAllLocalServers() {
+        guard !isStoppingLocalServers, !localServers.isEmpty else {
+            return
+        }
+
+        let serversToStop = localServers
+
+        guard confirmStopLocalServers(serversToStop) else {
+            return
+        }
+
+        setStoppingLocalServers(true)
+
+        let monitor = localServerMonitor
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            let result = monitor.stop(serversToStop)
+
+            DispatchQueue.main.async {
+                self?.handleStopLocalServersResult(result)
+            }
+        }
     }
 
     @objc private func toggleLaunchAtLogin() {
@@ -179,6 +240,33 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    private func refreshLocalServers(presentErrors: Bool = false) {
+        guard !isRefreshingLocalServers, !isStoppingLocalServers else {
+            return
+        }
+
+        shouldPresentLocalServerRefreshError = shouldPresentLocalServerRefreshError || presentErrors
+        setRefreshingLocalServers(true)
+
+        let monitor = localServerMonitor
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            let result = Result {
+                try monitor.currentServers()
+            }
+
+            DispatchQueue.main.async {
+                self?.handleLocalServerResult(result)
+            }
+        }
+    }
+
+    private func startLocalServerRefreshTimer() {
+        localServerRefreshTimer = Timer.scheduledTimer(withTimeInterval: 15, repeats: true) { [weak self] _ in
+            self?.refreshLocalServers()
+        }
+        localServerRefreshTimer?.tolerance = 5
+    }
+
     private func refreshLaunchAtLogin(registerIfNeeded: Bool) {
         guard !isUpdatingLaunchAtLogin else {
             return
@@ -204,6 +292,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func prepareToQuit() {
         isPreparingToQuit = true
+        localServerRefreshTimer?.invalidate()
         updateMenu()
         updateStatusButton()
 
@@ -293,6 +382,46 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    private func handleLocalServerResult(_ result: Result<[LocalServerProcess], Error>) {
+        setRefreshingLocalServers(false)
+
+        switch result {
+        case .success(let servers):
+            localServers = servers
+            localServerError = nil
+            shouldPresentLocalServerRefreshError = false
+            updateMenu()
+            updateStatusButton()
+        case .failure(let error):
+            localServers = []
+            localServerError = error
+            let shouldPresentError = shouldPresentLocalServerRefreshError
+            shouldPresentLocalServerRefreshError = false
+            updateMenu()
+            updateStatusButton()
+
+            if shouldPresentError {
+                presentError(
+                    title: "AgentKeep could not scan local servers.",
+                    message: error.localizedDescription
+                )
+            }
+        }
+    }
+
+    private func handleStopLocalServersResult(_ result: LocalServerStopResult) {
+        setStoppingLocalServers(false)
+
+        if !result.failures.isEmpty {
+            presentError(
+                title: "AgentKeep could not stop every local server.",
+                message: stopFailureMessage(for: result.failures)
+            )
+        }
+
+        refreshLocalServers()
+    }
+
     private func setWorking(_ value: Bool) {
         isWorking = value
         updateMenu()
@@ -304,6 +433,16 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
         updateMenu()
     }
 
+    private func setRefreshingLocalServers(_ value: Bool) {
+        isRefreshingLocalServers = value
+        updateMenu()
+    }
+
+    private func setStoppingLocalServers(_ value: Bool) {
+        isStoppingLocalServers = value
+        updateMenu()
+    }
+
     private func updateMenu() {
         if isPreparingToQuit {
             stateItem.title = "Disabling Keep-Awake before quitting..."
@@ -312,6 +451,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             refreshItem.isEnabled = false
             quitItem.title = "Quitting..."
             quitItem.isEnabled = false
+            updateLocalServersMenu()
             updateLaunchAtLoginMenu()
             return
         }
@@ -343,7 +483,81 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
 
+        updateLocalServersMenu()
         updateLaunchAtLoginMenu()
+    }
+
+    private func updateLocalServersMenu() {
+        for item in localServerItems {
+            menu.removeItem(item)
+        }
+
+        localServerItems = makeLocalServerMenuItems()
+
+        if let insertionIndex = menu.items.firstIndex(of: refreshLocalServersItem) {
+            for (offset, item) in localServerItems.enumerated() {
+                menu.insertItem(item, at: insertionIndex + offset)
+            }
+        }
+
+        if isPreparingToQuit {
+            localServersHeaderItem.title = "Local Servers"
+            refreshLocalServersItem.isEnabled = false
+            stopLocalServersItem.isEnabled = false
+            return
+        }
+
+        if isStoppingLocalServers {
+            localServersHeaderItem.title = "Local Servers: Stopping..."
+            refreshLocalServersItem.isEnabled = false
+            stopLocalServersItem.title = "Stopping Local Servers..."
+            stopLocalServersItem.isEnabled = false
+            return
+        }
+
+        if isRefreshingLocalServers, localServers.isEmpty {
+            localServersHeaderItem.title = "Local Servers: Checking..."
+        } else if localServerError != nil {
+            localServersHeaderItem.title = "Local Servers: Scan Failed"
+        } else {
+            localServersHeaderItem.title = "Local Servers: \(localServers.count) Running"
+        }
+
+        refreshLocalServersItem.isEnabled = !isRefreshingLocalServers
+        stopLocalServersItem.title = "Stop All Local Servers..."
+        stopLocalServersItem.isEnabled = !localServers.isEmpty && !isRefreshingLocalServers
+    }
+
+    private func makeLocalServerMenuItems() -> [NSMenuItem] {
+        if isPreparingToQuit {
+            return [disabledMenuItem(title: "Unavailable while quitting")]
+        }
+
+        if let localServerError {
+            let item = disabledMenuItem(title: "Could not scan local servers")
+            item.toolTip = localServerError.localizedDescription
+            return [item]
+        }
+
+        if localServers.isEmpty {
+            if isRefreshingLocalServers {
+                return [disabledMenuItem(title: "Scanning localhost listeners...")]
+            }
+
+            return [disabledMenuItem(title: "No local dev servers detected")]
+        }
+
+        return localServers.map { server in
+            let item = disabledMenuItem(title: menuTitle(for: server))
+            item.toolTip = tooltip(for: server)
+            return item
+        }
+    }
+
+    private func disabledMenuItem(title: String) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+        item.isEnabled = false
+        return item
     }
 
     private func updateLaunchAtLoginMenu() {
@@ -421,7 +635,81 @@ public final class AppDelegate: NSObject, NSApplicationDelegate {
             button.title = "AK"
         }
 
-        button.toolTip = tooltip
+        if localServers.isEmpty {
+            button.toolTip = tooltip
+        } else {
+            button.toolTip = "\(tooltip). \(localServers.count) local servers running."
+        }
+    }
+
+    private func menuTitle(for server: LocalServerProcess) -> String {
+        let ports = server.sortedPorts.map { ":\($0)" }.joined(separator: ", ")
+        let project = server.projectName ?? "Unknown folder"
+
+        return "\(ports) - \(server.kind.rawValue) - \(project) (PID \(server.pid))"
+    }
+
+    private func tooltip(for server: LocalServerProcess) -> String {
+        [
+            "Process: \(server.processName)",
+            "Command: \(server.commandLine ?? "Unknown")",
+            "Folder: \(displayPath(server.workingDirectory))",
+            "Listeners: \(server.listeners.map(\.rawName).joined(separator: ", "))"
+        ].joined(separator: "\n")
+    }
+
+    private func displayPath(_ path: String?) -> String {
+        guard let path else {
+            return "Unknown"
+        }
+
+        let homeDirectory = NSHomeDirectory()
+
+        if path == homeDirectory {
+            return "~"
+        }
+
+        if path.hasPrefix(homeDirectory + "/") {
+            return "~" + path.dropFirst(homeDirectory.count)
+        }
+
+        return path
+    }
+
+    private func confirmStopLocalServers(_ servers: [LocalServerProcess]) -> Bool {
+        NSApp.activate(ignoringOtherApps: true)
+
+        let alert = NSAlert()
+        alert.messageText = "Stop all local development servers?"
+        alert.informativeText = stopConfirmationMessage(for: servers)
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "Cancel")
+        alert.addButton(withTitle: "Stop All")
+
+        return alert.runModal() == .alertSecondButtonReturn
+    }
+
+    private func stopConfirmationMessage(for servers: [LocalServerProcess]) -> String {
+        let serverLines = servers.prefix(8).map { server in
+            "- \(menuTitle(for: server)) in \(displayPath(server.workingDirectory))"
+        }
+
+        let remainingCount = servers.count - serverLines.count
+        let remainingText = remainingCount > 0 ? "\n- And \(remainingCount) more." : ""
+
+        return """
+        AgentKeep will send SIGTERM to these processes and use SIGKILL if any of them keep running:
+
+        \(serverLines.joined(separator: "\n"))\(remainingText)
+        """
+    }
+
+    private func stopFailureMessage(for failures: [LocalServerStopFailure]) -> String {
+        failures
+            .map { failure in
+                "\(menuTitle(for: failure.process)): \(failure.message)"
+            }
+            .joined(separator: "\n")
     }
 
     private func presentError(title: String, message: String) {

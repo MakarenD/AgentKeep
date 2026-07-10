@@ -13,6 +13,8 @@ It lets you keep a Mac awake while the lid is closed, so a coding agent can keep
 - Uses the standard macOS administrator prompt when `pmset` needs privileges.
 - Starts automatically after login.
 - Includes a `Launch at Login` toggle in the menu.
+- Shows currently running local development servers such as Node.js, PHP, Python, .NET, Java, Go, Ruby, Bun, Deno, and project-local localhost listeners.
+- Lets you stop all detected local development servers from one menu action.
 - Disables Keep-Awake before quitting, so closing AgentKeep does not leave the Mac in `SleepDisabled` mode.
 - Warns before quitting if macOS cannot disable Keep-Awake.
 
@@ -22,6 +24,8 @@ Click the AgentKeep menu bar icon.
 
 - `Enable Keep-Awake`: prevents system sleep by setting `SleepDisabled` to `1`.
 - `Disable Keep-Awake`: restores normal sleep behavior by setting `SleepDisabled` to `0`.
+- `Local Servers`: shows detected local development servers with their ports, runtime, project folder, and PID.
+- `Stop All Local Servers`: asks for confirmation, then stops detected local development servers.
 - `Launch at Login`: controls whether AgentKeep starts after login.
 - `Quit AgentKeep`: first restores `pmset -a disablesleep 0`, then exits.
 
@@ -62,5 +66,3 @@ If macOS asks for approval, allow AgentKeep in:
 ```text
 System Settings > General > Login Items
 ```
-
-GitHub Actions only runs tests and verifies that the local package can be built. It does not publish releases.
