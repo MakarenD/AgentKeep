@@ -1,0 +1,339 @@
+{
+  "communities": {
+    "0": [
+      "darwin",
+      "hashable",
+      "int",
+      "set",
+      "sources_agentkeepcore_localservermonitor",
+      "sources_agentkeepcore_localservermonitor_localserverlistener",
+      "sources_agentkeepcore_localservermonitor_localservermonitor",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_commandlines",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_containsany",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_currentservers",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_currentworkingdirectories",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_islikelylocaldevelopmentserver",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_islocaldevelopmentlistener",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_isprocessrunning",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_isprojectdirectory",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_kind",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_normalizedsearchtext",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_parseaddress",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_parsecwdoutput",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_parselistenername",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_parselsofoutput",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_parseport",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_parsepsoutput",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_runprocess",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_sendsignal",
+      "sources_agentkeepcore_localservermonitor_localservermonitor_stop",
+      "sources_agentkeepcore_localservermonitor_localserverprocess",
+      "sources_agentkeepcore_localservermonitor_localserverstopfailure",
+      "sources_agentkeepcore_localservermonitor_localserverstopresult",
+      "sources_agentkeepcore_localservermonitor_parsedlsofrecord",
+      "sources_agentkeepcore_localservermonitor_swift_bool",
+      "sources_agentkeepcore_localservermonitor_swift_int32",
+      "sources_agentkeepcore_localservermonitor_swift_string"
+    ],
+    "1": [
+      "error",
+      "localizederror",
+      "sources_agentkeepcore_localservermonitor_localservermonitorerror",
+      "sources_agentkeepcore_localservermonitor_localservermonitorerror_commandfailed",
+      "sources_agentkeepcore_powermanager",
+      "sources_agentkeepcore_powermanager_powermanager",
+      "sources_agentkeepcore_powermanager_powermanager_applescriptstring",
+      "sources_agentkeepcore_powermanager_powermanager_currentkeepawakestate",
+      "sources_agentkeepcore_powermanager_powermanager_parsesleepdisabledvalue",
+      "sources_agentkeepcore_powermanager_powermanager_runprocess",
+      "sources_agentkeepcore_powermanager_powermanager_setkeepawake",
+      "sources_agentkeepcore_powermanager_powermanagererror",
+      "sources_agentkeepcore_powermanager_powermanagererror_commandfailed",
+      "sources_agentkeepcore_powermanager_powermanagererror_unreadablepmsetoutput",
+      "sources_agentkeepcore_powermanager_swift_bool",
+      "sources_agentkeepcore_powermanager_swift_int32",
+      "sources_agentkeepcore_powermanager_swift_string",
+      "tests_agentkeepcoretests_powermanagertests_powermanagertests",
+      "tests_agentkeepcoretests_powermanagertests_powermanagertests_testparseslegacydisablesleepkey",
+      "tests_agentkeepcoretests_powermanagertests_powermanagertests_testparsessleepdisabledwhendisabled",
+      "tests_agentkeepcoretests_powermanagertests_powermanagertests_testparsessleepdisabledwhenenabled",
+      "tests_agentkeepcoretests_powermanagertests_powermanagertests_testreturnsnilwhensleepdisabledismissing",
+      "xctestcase"
+    ],
+    "2": [
+      "nsapplicationdelegate",
+      "nsmenu",
+      "nsmenudelegate",
+      "nsobject",
+      "nsstatusitem",
+      "sources_agentkeepcore_appdelegate_appdelegate",
+      "sources_agentkeepcore_appdelegate_appdelegate_confirmstoplocalservers",
+      "sources_agentkeepcore_appdelegate_appdelegate_handlestoplocalserversresult",
+      "sources_agentkeepcore_appdelegate_appdelegate_init",
+      "sources_agentkeepcore_appdelegate_appdelegate_menuwillopen",
+      "sources_agentkeepcore_appdelegate_appdelegate_openloginitemssettings",
+      "sources_agentkeepcore_appdelegate_appdelegate_presenterror",
+      "sources_agentkeepcore_appdelegate_appdelegate_quit",
+      "sources_agentkeepcore_appdelegate_appdelegate_setstoppinglocalservers",
+      "sources_agentkeepcore_appdelegate_appdelegate_stopalllocalservers",
+      "timer"
+    ],
+    "3": [
+      "foundation",
+      "servicemanagement",
+      "sources_agentkeepcore_loginitemmanager",
+      "sources_agentkeepcore_loginitemmanager_loginitemmanager",
+      "sources_agentkeepcore_loginitemmanager_loginitemmanager_currentstate",
+      "sources_agentkeepcore_loginitemmanager_loginitemmanager_openloginitemssettings",
+      "sources_agentkeepcore_loginitemmanager_loginitemmanager_registerifpreferred",
+      "sources_agentkeepcore_loginitemmanager_loginitemmanager_setlaunchatloginpreferred",
+      "sources_agentkeepcore_loginitemmanager_state",
+      "sources_agentkeepcore_loginitemmanager_state_enabled",
+      "sources_agentkeepcore_loginitemmanager_state_notfound",
+      "sources_agentkeepcore_loginitemmanager_state_notregistered",
+      "sources_agentkeepcore_loginitemmanager_state_requiresapproval",
+      "sources_agentkeepcore_loginitemmanager_state_unknown",
+      "sources_agentkeepcore_loginitemmanager_swift_bool"
+    ],
+    "4": [
+      "agentkeepcore",
+      "appkit",
+      "sources_agentkeep_main",
+      "sources_agentkeepcore_appdelegate",
+      "tests_agentkeepcoretests_localservermonitortests",
+      "tests_agentkeepcoretests_localservermonitortests_localservermonitortests",
+      "tests_agentkeepcoretests_localservermonitortests_localservermonitortests_testparsescwdoutput",
+      "tests_agentkeepcoretests_localservermonitortests_localservermonitortests_testparsesipv6listenerport",
+      "tests_agentkeepcoretests_localservermonitortests_localservermonitortests_testparseslsofoutputwithmultiplelistenersforoneprocess",
+      "tests_agentkeepcoretests_localservermonitortests_localservermonitortests_testparsespsoutput",
+      "tests_agentkeepcoretests_powermanagertests",
+      "xctest"
+    ],
+    "5": [
+      "sources_agentkeepcore_localservermonitor_localserverkind",
+      "sources_agentkeepcore_localservermonitor_localserverkind_bun",
+      "sources_agentkeepcore_localservermonitor_localserverkind_deno",
+      "sources_agentkeepcore_localservermonitor_localserverkind_dotnet",
+      "sources_agentkeepcore_localservermonitor_localserverkind_go",
+      "sources_agentkeepcore_localservermonitor_localserverkind_java",
+      "sources_agentkeepcore_localservermonitor_localserverkind_node",
+      "sources_agentkeepcore_localservermonitor_localserverkind_other",
+      "sources_agentkeepcore_localservermonitor_localserverkind_php",
+      "sources_agentkeepcore_localservermonitor_localserverkind_python",
+      "sources_agentkeepcore_localservermonitor_localserverkind_ruby",
+      "sources_agentkeepcore_localservermonitor_localserverkind_rust"
+    ],
+    "6": [
+      "nsmenuitem",
+      "sources_agentkeepcore_appdelegate_appdelegate_disabledmenuitem",
+      "sources_agentkeepcore_appdelegate_appdelegate_displaypath",
+      "sources_agentkeepcore_appdelegate_appdelegate_makelocalservermenuitems",
+      "sources_agentkeepcore_appdelegate_appdelegate_menutitle",
+      "sources_agentkeepcore_appdelegate_appdelegate_stopconfirmationmessage",
+      "sources_agentkeepcore_appdelegate_appdelegate_stopfailuremessage",
+      "sources_agentkeepcore_appdelegate_appdelegate_tooltip",
+      "sources_agentkeepcore_appdelegate_appdelegate_updatelocalserversmenu",
+      "sources_agentkeepcore_appdelegate_swift_string"
+    ],
+    "7": [
+      "notification",
+      "sources_agentkeepcore_appdelegate_appdelegate_applicationdidfinishlaunching",
+      "sources_agentkeepcore_appdelegate_appdelegate_configurestatusitem",
+      "sources_agentkeepcore_appdelegate_appdelegate_handlelocalserverresult",
+      "sources_agentkeepcore_appdelegate_appdelegate_refreshlocalservers",
+      "sources_agentkeepcore_appdelegate_appdelegate_refreshlocalserversfrommenu",
+      "sources_agentkeepcore_appdelegate_appdelegate_setrefreshinglocalservers",
+      "sources_agentkeepcore_appdelegate_appdelegate_startlocalserverrefreshtimer",
+      "sources_agentkeepcore_appdelegate_swift_error"
+    ],
+    "8": [
+      "nsapplication",
+      "sources_agentkeepcore_appdelegate_appdelegate_applicationshouldterminate",
+      "sources_agentkeepcore_appdelegate_appdelegate_configuremenu",
+      "sources_agentkeepcore_appdelegate_appdelegate_preparetoquit",
+      "sources_agentkeepcore_appdelegate_appdelegate_updatelaunchatloginmenu",
+      "sources_agentkeepcore_appdelegate_appdelegate_updatemenu"
+    ],
+    "9": [
+      "sources_agentkeepcore_appdelegate_appdelegate_handlestateresult",
+      "sources_agentkeepcore_appdelegate_appdelegate_refreshstate",
+      "sources_agentkeepcore_appdelegate_appdelegate_refreshstatefrommenu",
+      "sources_agentkeepcore_appdelegate_appdelegate_setworking",
+      "sources_agentkeepcore_appdelegate_appdelegate_togglekeepawake",
+      "sources_agentkeepcore_appdelegate_appdelegate_updatestatusbutton"
+    ],
+    "10": [
+      "result",
+      "sources_agentkeepcore_appdelegate_appdelegate_handlelaunchatloginresult",
+      "sources_agentkeepcore_appdelegate_appdelegate_refreshlaunchatlogin",
+      "sources_agentkeepcore_appdelegate_appdelegate_setupdatinglaunchatlogin",
+      "sources_agentkeepcore_appdelegate_appdelegate_togglelaunchatlogin"
+    ],
+    "11": [
+      "sources_agentkeepcore_appdelegate_appdelegate_finishpreparingtoquit",
+      "sources_agentkeepcore_appdelegate_appdelegate_finishtermination",
+      "sources_agentkeepcore_appdelegate_appdelegate_finishterminationafterfailure",
+      "sources_agentkeepcore_appdelegate_appdelegate_presentquitfailure",
+      "sources_agentkeepcore_appdelegate_swift_bool"
+    ],
+    "12": [
+      "package",
+      "packagedescription"
+    ],
+    "13": [
+      "scripts_build_app",
+      "scripts_build_app_sh__entry"
+    ],
+    "14": [
+      "scripts_build_package",
+      "scripts_build_package_sh__entry"
+    ]
+  },
+  "cohesion": {
+    "0": 0.19318181818181818,
+    "1": 0.14624505928853754,
+    "2": 0.175,
+    "3": 0.1619047619047619,
+    "4": 0.18181818181818182,
+    "5": 0.16666666666666666,
+    "6": 0.35555555555555557,
+    "7": 0.2777777777777778,
+    "8": 0.3333333333333333,
+    "9": 0.6,
+    "10": 0.8,
+    "11": 0.7,
+    "12": 1.0,
+    "13": 1.0,
+    "14": 1.0
+  },
+  "gods": [
+    {
+      "id": "sources_agentkeepcore_appdelegate_appdelegate",
+      "label": "AppDelegate",
+      "degree": 57
+    },
+    {
+      "id": "sources_agentkeepcore_localservermonitor_localservermonitor",
+      "label": "LocalServerMonitor",
+      "degree": 21
+    },
+    {
+      "id": "sources_agentkeepcore_localservermonitor_localserverprocess",
+      "label": "LocalServerProcess",
+      "degree": 19
+    },
+    {
+      "id": "sources_agentkeepcore_localservermonitor_localserverkind",
+      "label": "LocalServerKind",
+      "degree": 15
+    },
+    {
+      "id": "sources_agentkeepcore_localservermonitor_localserverlistener",
+      "label": "LocalServerListener",
+      "degree": 8
+    },
+    {
+      "id": "sources_agentkeepcore_loginitemmanager_loginitemmanager",
+      "label": "LoginItemManager",
+      "degree": 8
+    },
+    {
+      "id": "sources_agentkeepcore_localservermonitor_localserverstopfailure",
+      "label": "LocalServerStopFailure",
+      "degree": 7
+    },
+    {
+      "id": "sources_agentkeepcore_loginitemmanager_state",
+      "label": "State",
+      "degree": 7
+    },
+    {
+      "id": "sources_agentkeepcore_powermanager_powermanager",
+      "label": "PowerManager",
+      "degree": 7
+    },
+    {
+      "id": "sources_agentkeepcore_powermanager_powermanagererror",
+      "label": "PowerManagerError",
+      "degree": 7
+    }
+  ],
+  "surprises": [
+    {
+      "source": "AppDelegate",
+      "target": "LocalServerMonitor",
+      "source_files": [
+        "Sources/AgentKeepCore/AppDelegate.swift",
+        "Sources/AgentKeepCore/LocalServerMonitor.swift"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
+    },
+    {
+      "source": "AppDelegate",
+      "target": "PowerManager",
+      "source_files": [
+        "Sources/AgentKeepCore/AppDelegate.swift",
+        "Sources/AgentKeepCore/PowerManager.swift"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
+    },
+    {
+      "source": "AppDelegate",
+      "target": "LocalServerProcess",
+      "source_files": [
+        "Sources/AgentKeepCore/AppDelegate.swift",
+        "Sources/AgentKeepCore/LocalServerMonitor.swift"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "AppDelegate",
+      "target": "LoginItemManager",
+      "source_files": [
+        "Sources/AgentKeepCore/AppDelegate.swift",
+        "Sources/AgentKeepCore/LoginItemManager.swift"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `AppDelegate` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 10`, `Community 11`?",
+      "why": "High betweenness centrality (0.593) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `LocalServerMonitor` connect `Community 0` to `Community 2`?",
+      "why": "High betweenness centrality (0.195) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `LocalServerProcess` connect `Community 0` to `Community 2`, `Community 5`, `Community 6`, `Community 7`?",
+      "why": "High betweenness centrality (0.184) - this node is a cross-community bridge."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 2 inferred relationships involving `AppDelegate` (e.g. with `LocalServerMonitor` and `PowerManager`) actually correct?",
+      "why": "`AppDelegate` has 2 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `PackageDescription`, `Darwin`, `node` to the rest of the system?",
+      "why": "21 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 1` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.14624505928853754 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "Package.swift": {
+    "mtime": 1782802505.3231819,
+    "ast_hash": "c7a8814575c6acc175b63841d970a625",
+    "semantic_hash": "c7a8814575c6acc175b63841d970a625"
+  },
+  "Sources/AgentKeep/main.swift": {
+    "mtime": 1782802505.3239408,
+    "ast_hash": "6846f1a58e092a9c8a5381439e47218a",
+    "semantic_hash": "6846f1a58e092a9c8a5381439e47218a"
+  },
+  "Sources/AgentKeepCore/AppDelegate.swift": {
+    "mtime": 1783674590.4939704,
+    "ast_hash": "1dca1693bd73b53dae2e7758cdc89ddc",
+    "semantic_hash": "1dca1693bd73b53dae2e7758cdc89ddc"
+  },
+  "Sources/AgentKeepCore/LocalServerMonitor.swift": {
+    "mtime": 1783674495.7779155,
+    "ast_hash": "eca2888a2f0053f1f07ccdd75d38b57b",
+    "semantic_hash": "eca2888a2f0053f1f07ccdd75d38b57b"
+  },
+  "Sources/AgentKeepCore/LoginItemManager.swift": {
+    "mtime": 1782803135.3962865,
+    "ast_hash": "bacd5ea2272c5fe9cd5458a0241a6893",
+    "semantic_hash": "bacd5ea2272c5fe9cd5458a0241a6893"
+  },
+  "Sources/AgentKeepCore/PowerManager.swift": {
+    "mtime": 1782802505.3248014,
+    "ast_hash": "1adfd83f916c4daecda6849e83a56f93",
+    "semantic_hash": "1adfd83f916c4daecda6849e83a56f93"
+  },
+  "Tests/AgentKeepCoreTests/LocalServerMonitorTests.swift": {
+    "mtime": 1783674495.7806838,
+    "ast_hash": "7b8b04fed37c3d0c602e9ffdad4cbba9",
+    "semantic_hash": "7b8b04fed37c3d0c602e9ffdad4cbba9"
+  },
+  "Tests/AgentKeepCoreTests/PowerManagerTests.swift": {
+    "mtime": 1782802505.3252413,
+    "ast_hash": "368a7ce9e49de5adaf047fe86fb6432a",
+    "semantic_hash": "368a7ce9e49de5adaf047fe86fb6432a"
+  },
+  "scripts/build-app.sh": {
+    "mtime": 1782803873.213057,
+    "ast_hash": "b8eec9c5450661a559b10dc3d60c5713",
+    "semantic_hash": "b8eec9c5450661a559b10dc3d60c5713"
+  },
+  "scripts/build-package.sh": {
+    "mtime": 1782806759.943666,
+    "ast_hash": "e86a3fb2b371dfe5ebc9c819132955e0",
+    "semantic_hash": "e86a3fb2b371dfe5ebc9c819132955e0"
+  }
+}
