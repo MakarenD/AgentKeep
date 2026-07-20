@@ -11,14 +11,35 @@ let package = Package(
         .executable(name: "AgentKeep", targets: ["AgentKeep"])
     ],
     targets: [
-        .target(name: "AgentKeepCore"),
+        .target(
+            name: "AgentKeepIPC",
+            linkerSettings: [
+                .linkedFramework("Security")
+            ]
+        ),
+        .target(
+            name: "AgentKeepPrivilegedCore",
+            dependencies: ["AgentKeepIPC"]
+        ),
+        .target(
+            name: "AgentKeepCore",
+            dependencies: ["AgentKeepIPC"]
+        ),
         .executableTarget(
             name: "AgentKeep",
             dependencies: ["AgentKeepCore"]
         ),
+        .executableTarget(
+            name: "AgentKeepPrivilegedHelper",
+            dependencies: ["AgentKeepIPC", "AgentKeepPrivilegedCore"]
+        ),
         .testTarget(
             name: "AgentKeepCoreTests",
             dependencies: ["AgentKeepCore"]
+        ),
+        .testTarget(
+            name: "AgentKeepPrivilegedCoreTests",
+            dependencies: ["AgentKeepIPC", "AgentKeepPrivilegedCore"]
         )
     ]
 )

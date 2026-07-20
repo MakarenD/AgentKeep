@@ -2,7 +2,7 @@ import Foundation
 
 struct PowerManager {
     private let pmsetPath = "/usr/bin/pmset"
-    private let osascriptPath = "/usr/bin/osascript"
+    private let helperClient = PrivilegedHelperClient()
 
     func currentKeepAwakeState() throws -> Bool {
         let output = try runProcess(executablePath: pmsetPath, arguments: ["-g"])
@@ -15,11 +15,11 @@ struct PowerManager {
     }
 
     func setKeepAwake(enabled: Bool) throws {
-        let value = enabled ? "1" : "0"
-        let command = "\(pmsetPath) -a disablesleep \(value)"
-        let script = "do shell script \(Self.appleScriptString(command)) with administrator privileges"
+        try helperClient.setKeepAwake(enabled: enabled)
+    }
 
-        _ = try runProcess(executablePath: osascriptPath, arguments: ["-e", script])
+    func openHelperApprovalSettings() {
+        helperClient.openApprovalSettings()
     }
 
     static func parseSleepDisabledValue(from output: String) -> Bool? {
@@ -46,14 +46,6 @@ struct PowerManager {
         }
 
         return nil
-    }
-
-    private static func appleScriptString(_ value: String) -> String {
-        let escaped = value
-            .replacingOccurrences(of: "\\", with: "\\\\")
-            .replacingOccurrences(of: "\"", with: "\\\"")
-
-        return "\"\(escaped)\""
     }
 
     private func runProcess(executablePath: String, arguments: [String]) throws -> String {

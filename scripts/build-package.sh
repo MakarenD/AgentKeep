@@ -10,6 +10,12 @@ PKG_ROOT="$ROOT_DIR/.build/pkg-root"
 
 cd "$ROOT_DIR"
 
+if [[ -z "${CODE_SIGN_IDENTITY:-}" ]]; then
+  echo "CODE_SIGN_IDENTITY is required because AgentKeep contains a privileged helper." >&2
+  echo "Use an Apple Development identity for local testing or Developer ID Application for distribution." >&2
+  exit 1
+fi
+
 if [[ -z "$VERSION" ]]; then
   if git describe --tags --abbrev=0 >/dev/null 2>&1; then
     VERSION="$(git describe --tags --abbrev=0 | sed 's/^v//')"
@@ -46,6 +52,10 @@ pkgbuild_args=(
   --filter "/\\._.*"
   --filter "^\\._.*"
 )
+
+if [[ -n "${PKG_SIGN_IDENTITY:-}" ]]; then
+  pkgbuild_args+=(--sign "$PKG_SIGN_IDENTITY")
+fi
 
 COPYFILE_DISABLE=1 pkgbuild "${pkgbuild_args[@]}" "$PKG_PATH"
 
