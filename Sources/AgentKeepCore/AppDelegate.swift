@@ -27,6 +27,7 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate 
     private var shouldPresentLocalServerRefreshError = false
     private var isUpdatingLaunchAtLogin = false
     private var isPreparingToQuit = false
+    private var isQuitCleanupRunning = false
     private var hasApprovedTermination = false
     private var localServerRefreshTimer: Timer?
 
@@ -52,7 +53,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate 
             return
         }
 
-        button.imagePosition = .imageOnly
+        button.imagePosition = .imageLeading
+        button.font = .monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .medium)
         button.toolTip = "AgentKeep"
         updateStatusButton()
     }
@@ -296,12 +298,26 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate 
         updateMenu()
         updateStatusButton()
 
+        startQuitCleanupIfReady()
+    }
+
+    private func startQuitCleanupIfReady() {
+        guard QuitCleanupGate.shouldStart(
+            isPreparingToQuit: isPreparingToQuit,
+            isWorking: isWorking,
+            isCleanupRunning: isQuitCleanupRunning
+        ) else {
+            return
+        }
+
+        isQuitCleanupRunning = true
+
         let manager = powerManager
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let result = Result {
                 let currentState = try manager.currentKeepAwakeState()
 
-                if currentState {
+                if QuitCleanupGate.shouldDisableKeepAwake(currentState: currentState) {
                     try manager.setKeepAwake(enabled: false)
                 }
 
@@ -315,6 +331,8 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate 
     }
 
     private func finishPreparingToQuit(_ result: Result<Bool, Error>) {
+        isQuitCleanupRunning = false
+
         switch result {
         case .success(let isEnabled):
             isKeepAwakeEnabled = isEnabled
@@ -358,11 +376,24 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate 
         case .failure(let error):
             updateMenu()
             updateStatusButton()
+
+            if isPreparingToQuit {
+                startQuitCleanupIfReady()
+                return
+            }
+
+            if let helperError = error as? PrivilegedHelperClientError,
+               helperError.requiresApproval {
+                powerManager.openHelperApprovalSettings()
+            }
+
             presentError(
                 title: "AgentKeep could not update sleep prevention.",
                 message: error.localizedDescription
             )
         }
+
+        startQuitCleanupIfReady()
     }
 
     private func handleLaunchAtLoginResult(_ result: Result<LoginItemManager.State, Error>) {
@@ -611,6 +642,9 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate 
 
         let symbolName: String
         let tooltip: String
+        let presentation = StatusItemPresentation(
+            localServerCount: localServerError == nil ? localServers.count : nil
+        )
 
         if isPreparingToQuit {
             symbolName = "hourglass"
@@ -629,17 +663,14 @@ public final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate 
         if let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: tooltip) {
             image.isTemplate = true
             button.image = image
-            button.title = ""
+            button.title = presentation.title
         } else {
             button.image = nil
-            button.title = "AK"
+            button.title = presentation.fallbackTitle
         }
 
-        if localServers.isEmpty {
-            button.toolTip = tooltip
-        } else {
-            button.toolTip = "\(tooltip). \(localServers.count) local servers running."
-        }
+        button.toolTip = "\(tooltip). \(presentation.processSummary)."
+        button.setAccessibilityLabel("\(tooltip). \(presentation.processSummary).")
     }
 
     private func menuTitle(for server: LocalServerProcess) -> String {
